@@ -141,24 +141,6 @@ def DFS(nodes, fuel, source, destination):
         if currentNode.name == destination:
             return nodes
 
-def sortByAlphabet_UCS(children):
-    less = []
-    greater = []
-    # euqal is not useful in this case but we still implement it for future use
-    equal = []
-    if len(children) > 1:
-        pivot = children[0]
-        for child in children:
-            if ord(child[1].name) < ord(pivot[1].name):
-                less.append(child)
-            if ord(child[1].name) == ord(pivot[1].name):
-                equal.append(child)
-            if ord(child[1].name) > ord(pivot[1].name):
-                greater.append(child)
-        return sortByAlphabet(less) + equal + sortByAlphabet(greater)
-    else:
-        return children
-
 # Define UCS
 def UCS(nodes, fuel, source, destination):
     sourceNode = nodes[findIndexOfNode(nodes, source)]
@@ -177,7 +159,16 @@ def UCS(nodes, fuel, source, destination):
                 cost = currentNode.distances[indexOfNeighbor]
                 cost = int(cost) + currentNode.fuel
                 if cost <= fuel:
-                    heapq.heappush(frontier, (cost, currentNode, neighbor))
+                    # check if the currentNode is already in frontier
+                    try:
+                        duplicated_node = [nodes_frontier[2] for nodes_frontier in frontier].index(neighbor)
+                    except ValueError:
+                        # No duplicated node
+                        heapq.heappush(frontier, (cost, currentNode, neighbor))
+                    else:
+                        # check the cost of the current one is less or greater or euqal
+                        if cost < frontier[duplicated_node][0]:
+                            frontier[duplicated_node] = (cost, currentNode, neighbor)
             indexOfNeighbor += 1
         while flag:
             if not frontier:
@@ -193,7 +184,7 @@ def UCS(nodes, fuel, source, destination):
                     heapq.heappush(frontier, nextNode_Info)
                     break
             if len(infoOfNodes) > 1:
-                infoOfNodes = sortByAlphabet_UCS(infoOfNodes)
+                infoOfNodes = sortByAlphabet(infoOfNodes)
                 currentNode_Info = infoOfNodes[0]
                 for infoOfNode in infoOfNodes[1:]:
                     heapq.heappush(frontier, infoOfNode)

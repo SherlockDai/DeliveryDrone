@@ -41,11 +41,11 @@ def sortByAlphabet(children):
     if len(children) > 1:
         pivot = children[0]
         for child in children:
-            if ord(child[2]) < ord(pivot[2]):
+            if child[2] < pivot[2]:
                 less.append(child)
-            if ord(child[2]) == ord(pivot[2]):
+            if child[2] == pivot[2]:
                 equal.append(child)
-            if ord(child[2]) > ord(pivot[2]):
+            if child[2] > pivot[2]:
                 greater.append(child)
         return sortByAlphabet(less) + equal + sortByAlphabet(greater)
     else:
